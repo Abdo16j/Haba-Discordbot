@@ -5,12 +5,12 @@ client.on('guildCreate', guild => {
     // معرّف السيرفر الرئيسي
     const mainServerId = "1122241424197427200";
 
-    // اسم الروم لإرسال رسالة الدخول فيه في السيرفر الرئيسي
-    const joinChannelName = "guild-join";
+    // معرّف الروم لإرسال رسالة الدخول فيه في السيرفر الرئيسي
+    const joinChannelId = "1122241426445578428";
 
     if (guild.id === mainServerId) {
-        // العثور على الروم بناءً على الاسم
-        const joinChannel = guild.channels.cache.find(channel => channel.name === joinChannelName);
+        // العثور على الروم بناءً على المعرّف
+        const joinChannel = guild.channels.cache.get(joinChannelId);
 
         if (joinChannel) {
             // إرسال رسالة الدخول في الروم المحدد
@@ -26,12 +26,12 @@ client.on('guildDelete', guild => {
     // معرّف السيرفر الرئيسي
     const mainServerId = "1122241424197427200";
 
-    // اسم الروم لإرسال رسالة الخروج فيه في السيرفر الرئيسي
-    const leaveChannelName = "guild-leave";
+    // معرّف الروم لإرسال رسالة الخروج فيه في السيرفر الرئيسي
+    const leaveChannelId = "1122241426445578429";
 
     if (guild.id === mainServerId) {
-        // العثور على الروم بناءً على الاسم
-        const leaveChannel = guild.channels.cache.find(channel => channel.name === leaveChannelName);
+        // العثور على الروم بناءً على المعرّف
+        const leaveChannel = guild.channels.cache.get(leaveChannelId);
 
         if (leaveChannel) {
             // إرسال رسالة الخروج في الروم المحدد
