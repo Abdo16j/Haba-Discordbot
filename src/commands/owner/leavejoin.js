@@ -1,3 +1,29 @@
+/**
+ * @type {import("@structures/Command")}
+ */
+module.exports = {
+  name: "logs",
+  description: "leave-join guilds",
+  category: "OWNER",
+  botPermissions: ["EmbedLinks"],
+  command: {
+    enabled: true,
+    usage: "<script>",
+    minArgsCount: 1,
+  },
+  slashCommand: {
+    enabled: false,
+    options: [
+      {
+        name: "expression",
+        description: "bot logs",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+      },
+    ],
+  },
+
+
 // قائمة لتخزين معرفات السيرفرات التي تمت زيارتها
 let visitedServers = [];
 
