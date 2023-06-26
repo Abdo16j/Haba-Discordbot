@@ -1,6 +1,8 @@
 /**
  * @type {import("@structures/Command")}
  */
+const { Discord } = require("discord.js");
+
 module.exports = {
   name: "logs",
   description: "leave-join guilds",
@@ -17,7 +19,7 @@ module.exports = {
       {
         name: "expression",
         description: "bot logs",
-        type: ApplicationCommandOptionType.String,
+      type: Discord.ApplicationCommandOptionType.String,
         required: true,
       },
     ],
