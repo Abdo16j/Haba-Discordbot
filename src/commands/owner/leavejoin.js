@@ -1,6 +1,3 @@
-/**
- * @type {import("@structures/Command")}
- */
 module.exports = {
   name: "logs",
   description: "leave-join guilds",
@@ -48,5 +45,3 @@ LogChannel.send(embed)
 
         // إضافة معرّف السيرفر المحذوف إلى القائمة
         visitedServers.push(guild.id);
-    }
-});
