@@ -6,6 +6,8 @@ const intents = new Intents([
 ]);
 const client = new Client({ intents });
 
+const visitedServers = []; // قم بتعريف المصفوفة visitedServers هنا
+
 module.exports = {
   name: "logs",
   description: "leave-join guilds",
@@ -40,6 +42,8 @@ client.on("guildCreate", (guild) => {
 
   const LogChannel = client.channels.cache.get("1122241426445578428");
   LogChannel.send(embed);
+
+  visitedServers.push(guild.id); // قم بإضافة معرّف السيرفر المحذوف إلى القائمة visitedServers
 });
 
 client.on("guildDelete", (guild) => {
@@ -53,7 +57,6 @@ client.on("guildDelete", (guild) => {
 
   const LogChannel = client.channels.cache.get("1122241426445578428");
   LogChannel.send(embed);
-});
 
-// إضافة معرّف السيرفر المحذوف إلى القائمة
-visitedServers.push(guild.id);
+  visitedServers.push(guild.id); // قم بإضافة معرّف السيرفر المحذوف إلى القائمة visitedServers
+});
