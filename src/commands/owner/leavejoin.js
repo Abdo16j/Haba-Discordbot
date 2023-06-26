@@ -26,7 +26,7 @@ client.on('guildCreate', guild => {
     const embed = new Discord.MessageEmbed()
 .setTitle("I'm Added To A new server!")
 .setColor("GREEN")
-.setDescription('I'm Added To ${guild.name}, with ${guild.memberCount}\n\nTotal server: ${client.guilds.cache.size}\nTotal users: ${client.users.cache.size}')
+.setDescription('Am Added To ${guild.name}, with ${guild.memberCount}\n\nTotal server: ${client.guilds.cache.size}\nTotal users: ${client.users.cache.size}')
 .setTimestamp()
 
 const LogChannel = client.channels.cache.get('1122241426445578428')
