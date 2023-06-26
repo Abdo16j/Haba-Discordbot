@@ -1,6 +1,7 @@
 const { isHex } = require("@helpers/Utils");
 const { buildGreeting } = require("@handlers/greeting");
-const { ApplicationCommandOptionType, ChannelType, MessageEmbed } = require("discord.js");
+const { ApplicationCommandOptionType, ChannelType } = require("discord.js");
+const { CommandInteraction, MessageEmbed } = require("discord.js");
 const Discord = require("discord.js");
 
 module.exports = {
