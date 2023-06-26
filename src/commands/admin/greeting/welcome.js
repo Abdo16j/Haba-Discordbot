@@ -1,8 +1,6 @@
 const { isHex } = require("@helpers/Utils");
 const { buildGreeting } = require("@handlers/greeting");
 const { ApplicationCommandOptionType, ChannelType } = require("discord.js");
-const Discord = require("discord.js");
-const client = new Discord.Client();
 
 /**
  * @type {import("@structures/Command")}
@@ -268,20 +266,10 @@ async function setDescription(settings, desc, member) {
 
 // ...
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  const { commandName } = interaction;
-
-  // ...
-
-  if (commandName === "desc") {
-    const newDesc = interaction.options.getString("content");
-    response = await setDescription(settings, newDesc, interaction.member);
-  }
-
-  // ...
-});
+case "desc":
+  const newDesc = interaction.options.getString("content");
+  response = await setDescription(settings, newDesc, interaction.member);
+  break;
 
 
 
