@@ -291,12 +291,12 @@ async function sendPreview(settings, member) {
   const description = settings.welcome.embed.description;
   const mention = member.toString();
 
-  const embed = new MessageEmbed()
+   const embed = new MessageEmbed()
     .setDescription(`${description} ${mention}`)
     .setImage(settings.welcome.embed.image)
     .setColor(settings.welcome.embed.color);
 
-  await targetChannel.send(embed);
+  await targetChannel.send({ embeds: [embed] });
 }
 
 async function setStatus(settings, status) {
