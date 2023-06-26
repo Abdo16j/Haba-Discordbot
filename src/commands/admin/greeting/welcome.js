@@ -1,8 +1,10 @@
 const { isHex } = require("@helpers/Utils");
 const { buildGreeting } = require("@handlers/greeting");
-const { ApplicationCommandOptionType, ChannelType, MessageEmbed } = require("discord.js");
-const Discord = require("discord.js");
+const { ApplicationCommandOptionType, ChannelType } = require("discord.js");
 
+/**
+ * @type {import("@structures/Command")}
+ */
 module.exports = {
   name: "welcome",
   description: "setup welcome message",
@@ -53,13 +55,13 @@ module.exports = {
       {
         name: "status",
         description: "enable or disable welcome message",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "status",
             description: "enabled or disabled",
             required: true,
-            type: ApplicationCommandOptionType.STRING,
+            type: ApplicationCommandOptionType.String,
             choices: [
               {
                 name: "ON",
@@ -76,18 +78,18 @@ module.exports = {
       {
         name: "preview",
         description: "preview the configured welcome message",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
       },
       {
         name: "channel",
         description: "set welcome channel",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "channel",
             description: "channel name",
-            type: ApplicationCommandOptionType.CHANNEL,
-            channelTypes: [ChannelType.GUILD_TEXT],
+            type: ApplicationCommandOptionType.Channel,
+            channelTypes: [ChannelType.GuildText],
             required: true,
           },
         ],
@@ -95,12 +97,12 @@ module.exports = {
       {
         name: "desc",
         description: "set embed description",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "content",
             description: "description content",
-            type: ApplicationCommandOptionType.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
@@ -108,12 +110,12 @@ module.exports = {
       {
         name: "thumbnail",
         description: "configure embed thumbnail",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "status",
             description: "thumbnail status",
-            type: ApplicationCommandOptionType.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
             choices: [
               {
@@ -131,12 +133,12 @@ module.exports = {
       {
         name: "color",
         description: "set embed color",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "hex-code",
             description: "hex color code",
-            type: ApplicationCommandOptionType.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
@@ -144,12 +146,12 @@ module.exports = {
       {
         name: "footer",
         description: "set embed footer",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "content",
             description: "footer content",
-            type: ApplicationCommandOptionType.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
@@ -157,12 +159,12 @@ module.exports = {
       {
         name: "image",
         description: "set embed image",
-        type: ApplicationCommandOptionType.SUB_COMMAND,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "url",
             description: "image url",
-            type: ApplicationCommandOptionType.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
           },
         ],
@@ -230,6 +232,7 @@ module.exports = {
       response = await setImage(settings, url);
     }
 
+    //
     else response = "Invalid command usage!";
     return message.safeReply(response);
   },
@@ -252,17 +255,23 @@ module.exports = {
         response = await setChannel(settings, interaction.options.getChannel("channel"));
         break;
 
-      case "desc":
-        const newDesc = interaction.options.getString("content");
-        response = await setDescription(settings, newDesc, interaction.member);
+
+async function setDescription(settings, desc) {
+  settings.welcome.embed.description = desc;
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+ case "desc":
+        response = await setDescription(settings, interaction.options.getString("content"));
         break;
+
 
       case "thumbnail":
         response = await setThumbnail(settings, interaction.options.getString("status"));
         break;
 
       case "color":
-        response = await setColor(settings, interaction.options.getString("hex-code"));
+        response = await setColor(settings, interaction.options.getString("color"));
         break;
 
       case "footer":
@@ -281,21 +290,16 @@ module.exports = {
   },
 };
 
-async function sendPreview(settings, member) {
-  if (!settings.welcome?.enabled) return;
+async function sendPreview(settings, newDesc, member) {
+  if (!settings.welcome?.enabled) return "Welcome message not enabled in this server";
 
   const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
-  if (!targetChannel) return;
+  if (!targetChannel) return "No channel is configured to send welcome message";
 
-  const description = settings.welcome.embed.description;
-  const mention = member.toString();
+  const response = await buildGreeting(member, "WELCOME", settings.welcome);
+  await targetChannel.safeSend(response);
 
-   const embed = new MessageEmbed()
-    .setDescription(`${description} ${mention}`)
-    .setImage(settings.welcome.embed.image)
-    .setColor(settings.welcome.embed.color);
-
-  await targetChannel.send({ embeds: [embed] });
+  return `Sent welcome preview to ${targetChannel.toString()}`;
 }
 
 async function setStatus(settings, status) {
@@ -306,10 +310,10 @@ async function setStatus(settings, status) {
 }
 
 async function setChannel(settings, channel) {
-  if (!channel?.canSendEmbeds()) {
+  if (!channel.canSendEmbeds()) {
     return (
       "Ugh! I cannot send greeting to that channel? I need the `Write Messages` and `Embed Links` permissions in " +
-      (channel?.toString() || "that channel")
+      channel.toString()
     );
   }
   settings.welcome.channel = channel.id;
@@ -317,10 +321,8 @@ async function setChannel(settings, channel) {
   return `Configuration saved! Welcome message will be sent to ${channel ? channel.toString() : "Not found"}`;
 }
 
-async function setDescription(settings, desc, member) {
-  const mention = `<@${member.id}>`;
-  settings.welcome.embed.description = `${desc} ${mention}`;
-
+async function setDescription(settings, desc) {
+  settings.welcome.embed.description = desc;
   await settings.save();
   return "Configuration saved! Welcome message updated";
 }
