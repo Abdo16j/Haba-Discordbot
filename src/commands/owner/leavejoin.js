@@ -1,3 +1,6 @@
+/**
+ * @type {import("@structures/Command")}
+ */
 module.exports = {
   name: "logs",
   description: "leave-join guilds",
