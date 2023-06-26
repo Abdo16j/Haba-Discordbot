@@ -1,15 +1,13 @@
 const { isHex } = require("@helpers/Utils");
 const { buildGreeting } = require("@handlers/greeting");
-const { ApplicationCommandOptionType, ChannelType } = require("discord.js");
+const { ApplicationCommandOptionType, ChannelType, MessageEmbed } = require("discord.js");
+const Discord = require("discord.js");
 
-/**
- * @type {import("@structures/Command")}
- */
 module.exports = {
   name: "welcome",
   description: "setup welcome message",
   category: "ADMIN",
-  userPermissions: ["ManageGuild"],
+  userPermissions: ["MANAGE_GUILD"],
   command: {
     enabled: true,
     minArgsCount: 1,
@@ -55,13 +53,13 @@ module.exports = {
       {
         name: "status",
         description: "enable or disable welcome message",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "status",
             description: "enabled or disabled",
             required: true,
-            type: ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.STRING,
             choices: [
               {
                 name: "ON",
@@ -78,18 +76,18 @@ module.exports = {
       {
         name: "preview",
         description: "preview the configured welcome message",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
       },
       {
         name: "channel",
         description: "set welcome channel",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "channel",
             description: "channel name",
-            type: ApplicationCommandOptionType.Channel,
-            channelTypes: [ChannelType.GuildText],
+            type: ApplicationCommandOptionType.CHANNEL,
+            channelTypes: [ChannelType.GUILD_TEXT],
             required: true,
           },
         ],
@@ -97,12 +95,12 @@ module.exports = {
       {
         name: "desc",
         description: "set embed description",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "content",
             description: "description content",
-            type: ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.STRING,
             required: true,
           },
         ],
@@ -110,12 +108,12 @@ module.exports = {
       {
         name: "thumbnail",
         description: "configure embed thumbnail",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "status",
             description: "thumbnail status",
-            type: ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.STRING,
             required: true,
             choices: [
               {
@@ -133,12 +131,12 @@ module.exports = {
       {
         name: "color",
         description: "set embed color",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "hex-code",
             description: "hex color code",
-            type: ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.STRING,
             required: true,
           },
         ],
@@ -146,12 +144,12 @@ module.exports = {
       {
         name: "footer",
         description: "set embed footer",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "content",
             description: "footer content",
-            type: ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.STRING,
             required: true,
           },
         ],
@@ -159,12 +157,12 @@ module.exports = {
       {
         name: "image",
         description: "set embed image",
-        type: ApplicationCommandOptionType.Subcommand,
+        type: ApplicationCommandOptionType.SUB_COMMAND,
         options: [
           {
             name: "url",
             description: "image url",
-            type: ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.STRING,
             required: true,
           },
         ],
@@ -232,7 +230,6 @@ module.exports = {
       response = await setImage(settings, url);
     }
 
-    //
     else response = "Invalid command usage!";
     return message.safeReply(response);
   },
@@ -255,45 +252,17 @@ module.exports = {
         response = await setChannel(settings, interaction.options.getChannel("channel"));
         break;
 
-async function sendPreview(settings, member) {
-  if (!settings.welcome?.enabled) return;
-
-  const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
-  if (!targetChannel) return;
-
-  const description = settings.welcome.embed.description;
-  const mention = member.toString();
-
-  const embed = new Discord.MessageEmbed()
-    .setDescription(`${description} ${mention}`)
-    .setImage(settings.welcome.embed.image)
-    .setColor(settings.welcome.embed.color);
-
-  await targetChannel.send(embed);
-}
-
-
- async function setDescription(settings, desc, member) {
-  const mention = `<@${member.id}>`;
-  settings.welcome.embed.description = `${desc} ${mention}`;
-  
-  await settings.save();
-  return "Configuration saved! Welcome message updated";
-}
-   case "desc":
-  const newDesc = interaction.options.getString("content");
-  response = await setDescription(settings, newDesc, interaction.member);
-  break;
-
-
-
+      case "desc":
+        const newDesc = interaction.options.getString("content");
+        response = await setDescription(settings, newDesc, interaction.member);
+        break;
 
       case "thumbnail":
         response = await setThumbnail(settings, interaction.options.getString("status"));
         break;
 
       case "color":
-        response = await setColor(settings, interaction.options.getString("color"));
+        response = await setColor(settings, interaction.options.getString("hex-code"));
         break;
 
       case "footer":
@@ -312,6 +281,74 @@ async function sendPreview(settings, member) {
   },
 };
 
+async function sendPreview(settings, member) {
+  if (!settings.welcome?.enabled) return;
+
+  const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
+  if (!targetChannel) return;
+
+  const description = settings.welcome.embed.description;
+  const mention = member.toString();
+
+  const embed = new Discord.MessageEmbed()
+    .setDescription(`${description} ${mention}`)
+    .setImage(settings.welcome.embed.image)
+    .setColor(settings.welcome.embed.color);
+
+  await targetChannel.send(embed);
+}
+
+async function setStatus(settings, status) {
+  const enabled = status.toUpperCase() === "ON" ? true : false;
+  settings.welcome.enabled = enabled;
+  await settings.save();
+  return `Configuration saved! Welcome message ${enabled ? "enabled" : "disabled"}`;
+}
+
+async function setChannel(settings, channel) {
+  if (!channel?.canSendEmbeds()) {
+    return (
+      "Ugh! I cannot send greeting to that channel? I need the `Write Messages` and `Embed Links` permissions in " +
+      (channel?.toString() || "that channel")
+    );
+  }
+  settings.welcome.channel = channel.id;
+  await settings.save();
+  return `Configuration saved! Welcome message will be sent to ${channel ? channel.toString() : "Not found"}`;
+}
+
+async function setDescription(settings, desc, member) {
+  const mention = `<@${member.id}>`;
+  settings.welcome.embed.description = `${desc} ${mention}`;
+
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+
+async function setThumbnail(settings, status) {
+  settings.welcome.embed.thumbnail = status.toUpperCase() === "ON" ? true : false;
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+
+async function setColor(settings, color) {
+  settings.welcome.embed.color = color;
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+
+async function setFooter(settings, content) {
+  settings.welcome.embed.footer = content;
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+
+async function setImage(settings, url) {
+  settings.welcome.embed.image = url;
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+
 async function sendWelcomeMessage(settings, member) {
   if (!settings.welcome?.enabled) return;
 
@@ -328,6 +365,7 @@ async function sendWelcomeMessage(settings, member) {
 
   await targetChannel.send(embed);
 }
+
 
 
 async function setStatus(settings, status) {
