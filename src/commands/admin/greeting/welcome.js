@@ -7,7 +7,7 @@ module.exports = {
   name: "welcome",
   description: "setup welcome message",
   category: "ADMIN",
-  userPermissions: ["MANAGE_GUILD"],
+  userPermissions: ["ManageGuild"],
   command: {
     enabled: true,
     minArgsCount: 1,
