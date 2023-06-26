@@ -290,17 +290,22 @@ async function setDescription(settings, desc) {
   },
 };
 
-async function sendPreview(settings, newDesc, member) {
-  if (!settings.welcome?.enabled) return "Welcome message not enabled in this server";
+async function sendPreview(settings, member) {
+  if (!settings.welcome?.enabled) return;
 
   const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
-  if (!targetChannel) return "No channel is configured to send welcome message";
+  if (!targetChannel) return;
 
-  const response = await buildGreeting(member, "WELCOME", settings.welcome);
-  await targetChannel.safeSend(response);
+  const description = settings.welcome.embed.description;
 
-  return `Sent welcome preview to ${targetChannel.toString()}`;
+  const embed = new MessageEmbed()
+    .setDescription(description)
+    .setImage(settings.welcome.embed.image)
+    .setColor(settings.welcome.embed.color);
+
+  await targetChannel.send({ embeds: [embed] });
 }
+
 
 async function setStatus(settings, status) {
   const enabled = status.toUpperCase() === "ON" ? true : false;
