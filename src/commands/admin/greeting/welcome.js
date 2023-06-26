@@ -255,9 +255,19 @@ module.exports = {
         response = await setChannel(settings, interaction.options.getChannel("channel"));
         break;
 
-      case "desc":
-        response = await setDescription(settings, interaction.options.getString("content"));
-        break;
+
+ async function setDescription(settings, desc, member) {
+  const mention = `<@${member.id}>`;
+  settings.welcome.embed.description = `${desc} ${mention}`;
+  
+  await settings.save();
+  return "Configuration saved! Welcome message updated";
+}
+   case "desc":
+  const newDesc = interaction.options.getString("content");
+  response = await setDescription(settings, newDesc, interaction.member);
+  break;
+
 
       case "thumbnail":
         response = await setThumbnail(settings, interaction.options.getString("status"));
