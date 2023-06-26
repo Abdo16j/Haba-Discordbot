@@ -290,7 +290,7 @@ async function sendPreview(settings, member) {
   const description = settings.welcome.embed.description;
   const mention = member.toString();
 
-  const embed = new Discord.MessageEmbed()
+  const embed = new MessageEmbed()
     .setDescription(`${description} ${mention}`)
     .setImage(settings.welcome.embed.image)
     .setColor(settings.welcome.embed.color);
