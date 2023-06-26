@@ -293,7 +293,7 @@ module.exports = {
   },
 };
 
-async function sendPreview(settings, newDesc, interaction.member) {
+async function sendPreview(settings, newDesc, member) {
   if (!settings.welcome?.enabled) return "Welcome message not enabled in this server";
 
   const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
