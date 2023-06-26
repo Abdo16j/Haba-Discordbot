@@ -1,5 +1,10 @@
-const { Client, MessageEmbed, ApplicationCommandOptionType } = require("discord.js");
-const client = new Client();
+const { Client, MessageEmbed, ApplicationCommandOptionType, Intents } = require("discord.js");
+const intents = new Intents([
+  Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_MEMBERS,
+  // أضف الانتوس الإضافية التي تحتاجها هنا
+]);
+const client = new Client({ intents });
 
 module.exports = {
   name: "logs",
