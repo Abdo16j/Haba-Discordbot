@@ -1,13 +1,13 @@
 /**
  * @type {import("@structures/Command")}
  */
-const { Discord } = require("discord.js");
+const Discord = require("discord.js");
 
 module.exports = {
   name: "logs",
   description: "leave-join guilds",
   category: "OWNER",
-  botPermissions: ["EmbedLinks"],
+  botPermissions: ["EMBED_LINKS"],
   command: {
     enabled: true,
     usage: "<script>",
@@ -19,7 +19,7 @@ module.exports = {
       {
         name: "expression",
         description: "bot logs",
-      type: Discord.ApplicationCommandOptionType.String,
+        type: Discord.ApplicationCommandOptionType.STRING,
         required: true,
       },
     ],
