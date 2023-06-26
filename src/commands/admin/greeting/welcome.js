@@ -255,6 +255,23 @@ module.exports = {
         response = await setChannel(settings, interaction.options.getChannel("channel"));
         break;
 
+async function sendPreview(settings, member) {
+  if (!settings.welcome?.enabled) return;
+
+  const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
+  if (!targetChannel) return;
+
+  const description = settings.welcome.embed.description;
+  const mention = member.toString();
+
+  const embed = new Discord.MessageEmbed()
+    .setDescription(`${description} ${mention}`)
+    .setImage(settings.welcome.embed.image)
+    .setColor(settings.welcome.embed.color);
+
+  await targetChannel.send(embed);
+}
+
 
  async function setDescription(settings, desc, member) {
   const mention = `<@${member.id}>`;
