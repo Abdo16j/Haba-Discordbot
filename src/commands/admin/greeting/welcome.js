@@ -256,17 +256,32 @@ module.exports = {
         break;
 
 
- async function setDescription(settings, desc, member) {
-  const mention = `<@${member.id}>`;
+async function setDescription(settings, desc, member) {
+  const mention = member.toString();
   settings.welcome.embed.description = `${desc} ${mention}`;
   
   await settings.save();
   return "Configuration saved! Welcome message updated";
 }
-   case "desc":
-  const newDesc = interaction.options.getString("content");
-  response = await setDescription(settings, newDesc, interaction.member);
-  break;
+
+// ...
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  const { commandName } = interaction;
+
+  // ...
+
+  if (commandName === "desc") {
+    const newDesc = interaction.options.getString("content");
+    response = await setDescription(settings, newDesc, interaction.member);
+  }
+
+  // ...
+});
+
+
 
 
       case "thumbnail":
@@ -293,17 +308,38 @@ module.exports = {
   },
 };
 
-async function sendPreview(settings, newDesc, member) {
-  if (!settings.welcome?.enabled) return "Welcome message not enabled in this server";
+async function sendWelcomeMessage(settings, member) {
+  if (!settings.welcome?.enabled) return;
 
   const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
-  if (!targetChannel) return "No channel is configured to send welcome message";
+  if (!targetChannel) return;
 
-  const response = await buildGreeting(member, "WELCOME", settings.welcome);
-  await targetChannel.safeSend(response);
+  const mention = member.toString();
+  await setDescription(settings, settings.welcome.embed.description, member);
 
-  return `Sent welcome preview to ${targetChannel.toString()}`;
+  const embed = new Discord.MessageEmbed()
+    .setDescription(`${settings.welcome.embed.description} ${mention}`)
+    .setImage(settings.welcome.embed.image)
+    .setColor(settings.welcome.embed.color);
+
+  await targetChannel.send(embed);
 }
+
+
+async function setDescription(settings, desc) {
+  settings.welcome.embed.description = desc;
+  await settings.save();
+}
+
+client.on("guildMemberAdd", async (member) => {
+  const guildId = member.guild.id;
+  const settings = await getSettings(guildId);
+
+  if (!settings) return;
+
+  await sendWelcomeMessage(settings, member);
+});
+
 
 async function setStatus(settings, status) {
   const enabled = status.toUpperCase() === "ON" ? true : false;
