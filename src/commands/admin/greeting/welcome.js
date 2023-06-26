@@ -179,7 +179,7 @@ module.exports = {
 
     // preview
     if (type === "preview") {
-      response = await sendPreview(settings, message.member);
+response = await sendPreview(settings, message.guild, message.member);
     }
 
     // status
@@ -289,11 +289,10 @@ async function setDescription(settings, desc) {
     return interaction.followUp(response);
   },
 };
-
-async function sendPreview(settings, member) {
+async function sendPreview(settings, guild, member) {
   if (!settings.welcome?.enabled) return;
 
-  const targetChannel = member.guild.channels.cache.get(settings.welcome.channel);
+  const targetChannel = guild.channels.cache.get(settings.welcome.channel);
   if (!targetChannel) return;
 
   const description = settings.welcome.embed.description;
