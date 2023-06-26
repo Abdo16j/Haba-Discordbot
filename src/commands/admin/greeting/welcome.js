@@ -256,17 +256,14 @@ module.exports = {
         break;
 
 
-async function setDescription(settings, desc, member) {
-  const mention = member.toString();
+ async function setDescription(settings, desc, member) {
+  const mention = `<@${member.id}>`;
   settings.welcome.embed.description = `${desc} ${mention}`;
   
   await settings.save();
   return "Configuration saved! Welcome message updated";
 }
-
-// ...
-
-case "desc":
+   case "desc":
   const newDesc = interaction.options.getString("content");
   response = await setDescription(settings, newDesc, interaction.member);
   break;
@@ -314,21 +311,6 @@ async function sendWelcomeMessage(settings, member) {
 
   await targetChannel.send(embed);
 }
-
-
-async function setDescription(settings, desc) {
-  settings.welcome.embed.description = desc;
-  await settings.save();
-}
-
-client.on("guildMemberAdd", async (member) => {
-  const guildId = member.guild.id;
-  const settings = await getSettings(guildId);
-
-  if (!settings) return;
-
-  await sendWelcomeMessage(settings, member);
-});
 
 
 async function setStatus(settings, status) {
