@@ -1,4 +1,5 @@
 module.exports = {
+  WEBSITE_BOT: "https://procontrol--discordbot2023.repl.co/",
   OWNER_IDS: [986696052499447828], // Bot owner ID's
   SUPPORT_SERVER: "https://discord.gg/ysVHWxbQQP", // Your bot support server
   PREFIX_COMMANDS: {
