@@ -46,6 +46,8 @@ process.on("unhandledRejection", (err) => client.logger.error(`Unhandled excepti
   console.log(`Bot is logged in as ${client.user.tag}`);
 });
 
+app.listen(process.env.PORT || port, () => console.log(`Listening on port ${port}`))
+
 const token = process.env.BOT_TOKEN; // Retrieve token from environment variable
 
 client.login(token); // Log in the bot using the retrieved token
