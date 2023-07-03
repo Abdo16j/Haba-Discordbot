@@ -6,7 +6,7 @@
   "author": "Sai Teja M",
   "license": "ISC",
   "engines": {
-    "node": ">=16.11.0"
+    "node": "^18"
   },
   "scripts": {
     "dev": "nodemon .",
