@@ -42,6 +42,11 @@ process.on("unhandledRejection", (err) => client.logger.error(`Unhandled excepti
     await initializeMongoose();
   }
 
-  // start the client
-  console.log(process.env.BOT_TOKEN);
+  client.on('ready', () => {
+  console.log(`Bot is logged in as ${client.user.tag}`);
+});
+
+const token = process.env.BOT_TOKEN; // Retrieve token from environment variable
+
+client.login(token); // Log in the bot using the retrieved token
 })();
