@@ -123,6 +123,9 @@ async function getHelpMenu({ client, guild }) {
         "A cool multipurpose discord bot which can serve all your needs\n\n" +
         `**Invite Me:** [Here](${client.getInvite()})\n` +
         `**Support Server:** [Join](${SUPPORT_SERVER})`
+        `**My Website:** [Click](${WEBSITE_BOT})`
+
+
     );
 
   return {
